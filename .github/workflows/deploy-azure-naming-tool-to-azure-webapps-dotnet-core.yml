@@ -21,7 +21,7 @@ name: Azure Naming Tool - Build and deploy to an Azure Web App
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '8.0.x'                 # set this to the .NET Core version to use
+  DOTNET_VERSION: '10.0.x'                 # set this to the .NET Core version to use
 
 on:
   push:
@@ -81,6 +81,7 @@ jobs:
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
@@ -100,7 +101,7 @@ jobs:
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4.1.8
         with:
           name: .net-app
 

@@ -1,8 +1,12 @@
-﻿using AzureNamingTool.Attributes;
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+using AzureNamingTool.Attributes;
 using AzureNamingTool.Helpers;
 using AzureNamingTool.Models;
 using AzureNamingTool.Services;
+using AzureNamingTool.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
+using PSC.Blazor.Components.MarkdownEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +18,26 @@ namespace AzureNamingTool.Controllers
     /// Controller for managing resource components.
     /// </summary>
     [Route("api/[controller]")]
+    [ApiVersion("1.0")]
     [ApiController]
     [ApiKey]
+    [Produces("application/json")]
     public class ResourceComponentsController : ControllerBase
     {
+        private readonly IResourceComponentService _resourceComponentService;
+        private readonly IAdminLogService _adminLogService;
         /// <summary>
         /// Response for controller functions
         /// </summary>
         ServiceResponse serviceResponse = new();
+
+        public ResourceComponentsController(
+            IResourceComponentService resourceComponentService,
+            IAdminLogService adminLogService)
+        {
+            _resourceComponentService = resourceComponentService;
+            _adminLogService = adminLogService;
+        }
 
         // GET: api/<resourcecomponentsController>
         /// <summary>
@@ -34,7 +50,7 @@ namespace AzureNamingTool.Controllers
         {
             try
             {
-                serviceResponse = await ResourceComponentService.GetItems(admin);
+                serviceResponse = await _resourceComponentService.GetItemsAsync(admin);
                 if (serviceResponse.Success)
                 {
                     return Ok(serviceResponse.ResponseObject);
@@ -46,7 +62,7 @@ namespace AzureNamingTool.Controllers
             }
             catch (Exception ex)
             {
-                AdminLogService.PostItem(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
+                await _adminLogService.PostItemAsync(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
                 return BadRequest(ex);
             }
         }
@@ -63,7 +79,7 @@ namespace AzureNamingTool.Controllers
             try
             {
                 // Get list of items
-                serviceResponse = await ResourceComponentService.GetItem(id);
+                serviceResponse = await _resourceComponentService.GetItemAsync(id);
                 if (serviceResponse.Success)
                 {
                     return Ok(serviceResponse.ResponseObject);
@@ -75,7 +91,7 @@ namespace AzureNamingTool.Controllers
             }
             catch (Exception ex)
             {
-                AdminLogService.PostItem(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
+                await _adminLogService.PostItemAsync(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
                 return BadRequest(ex);
             }
         }
@@ -91,10 +107,11 @@ namespace AzureNamingTool.Controllers
         {
             try
             {
-                serviceResponse = await ResourceComponentService.PostItem(item);
+                serviceResponse = await _resourceComponentService.PostItemAsync(item);
                 if (serviceResponse.Success)
                 {
-                    AdminLogService.PostItem(new AdminLogMessage() { Source = "API", Title = "INFORMATION", Message = "Resource Component (" + item.Name + ") added/updated." });
+                    // Get the item
+                    await _adminLogService.PostItemAsync(new AdminLogMessage() { Source = "API", Title = "INFORMATION", Message = "Resource Component (" + item.Name + ") added/updated." });
                     CacheHelper.InvalidateCacheObject("ResourceComponent");
                     return Ok(serviceResponse.ResponseObject);
                 }
@@ -105,7 +122,7 @@ namespace AzureNamingTool.Controllers
             }
             catch (Exception ex)
             {
-                AdminLogService.PostItem(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
+                await _adminLogService.PostItemAsync(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
                 return BadRequest(ex);
             }
         }
@@ -122,10 +139,10 @@ namespace AzureNamingTool.Controllers
         {
             try
             {
-                serviceResponse = await ResourceComponentService.PostConfig(items);
+                serviceResponse = await _resourceComponentService.PostConfigAsync(items);
                 if (serviceResponse.Success)
                 {
-                    AdminLogService.PostItem(new AdminLogMessage() { Source = "API", Title = "INFORMATION", Message = "Resource Components added/updated." });
+                    await _adminLogService.PostItemAsync(new AdminLogMessage() { Source = "API", Title = "INFORMATION", Message = "Resource Components added/updated." });
                     CacheHelper.InvalidateCacheObject("ResourceComponent");
                     return Ok(serviceResponse.ResponseObject);
                 }
@@ -136,9 +153,11 @@ namespace AzureNamingTool.Controllers
             }
             catch (Exception ex)
             {
-                AdminLogService.PostItem(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
+                await _adminLogService.PostItemAsync(new AdminLogMessage() { Title = "ERROR", Message = ex.Message });
                 return BadRequest(ex);
             }
         }
     }
 }
+
+#pragma warning restore CS1591

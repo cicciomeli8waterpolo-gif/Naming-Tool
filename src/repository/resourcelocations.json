@@ -311,22 +311,37 @@
   },
   {
     "id": 63,
-    "name": "US Nat East",
-    "shortName": "east"
+    "name": "Austria East",
+    "shortName": "ate"
   },
   {
     "id": 64,
-    "name": "US Nat West",
-    "shortName": "west"
+    "name": "Belgium Central",
+    "shortName": "bec"
   },
   {
     "id": 65,
-    "name": "US Sec East",
-    "shortName": "east"
+    "name": "Chile Central",
+    "shortName": "clc"
   },
   {
     "id": 66,
-    "name": "US Sec West",
-    "shortName": "west"
+    "name": "Indonesia Central",
+    "shortName": "idc"
+  },
+  {
+    "id": 67,
+    "name": "Malaysia West",
+    "shortName": "myw"
+  },
+  {
+    "id": 68,
+    "name": "Mexico Central",
+    "shortName": "mxc"
+  },
+  {
+    "id": 69,
+    "name": "Spain Central",
+    "shortName": "esc"
   }
 ]
